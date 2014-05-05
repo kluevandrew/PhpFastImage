@@ -1,9 +1,9 @@
 //============================================================================
 // Name        : php_fimage.cpp
 // Author      : Kluev Andrew
-// Version     :
-// Copyright   : 
-// Description : Hello World in C++, Ansi-style
+// Version     : 1.0
+// License     : BSD
+// Description : Fast image processing library depended on OpenCV
 //============================================================================
 #include <phpcpp.h>
 #include "fast_image_class.h"
@@ -13,20 +13,22 @@ extern "C" {
     /**
      *  Function that is called by PHP right after the PHP process
      *  has started, and that returns an address of an internal PHP
-     *  strucure with all the details and features of your extension
+     *  structure with all the details and features of your extension
      *
-     *  @return void*   a pointer to an address that is understood by PHP
+     *  @return void* a pointer to an address that is understood by PHP
      */
     PHPCPP_EXPORT void *get_module()
     {
-        // static(!) Php::Extension object that should stay in memory
-        // for the entire duration of the process (that's why it's static)
-        static Php::Extension PhpFastImage("FastImage", "1.0");
+        /**
+         * Static(!!!) Php::Extension object that should stay in memory
+         * for the entire duration of the process (that's why it's static)
+         */
+        static Php::Extension PhpFastImage("FastImage", "1.1");
 
-        // description of the class so that PHP knows which methods are accessible
+        // Description of the class so that PHP knows which methods are accessible
         Php::Class<FastImage> fastImage("FastImage");
 
-        // register the methods
+
         fastImage.method("__construct", &FastImage::__construct, {
         		Php::ByVal("string", Php::Type::String),
         });
@@ -59,7 +61,6 @@ extern "C" {
 
         PhpFastImage.add(std::move(fastImage));
 
-        // return the extension
         return PhpFastImage;
     }
 }

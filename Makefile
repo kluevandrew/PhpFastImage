@@ -42,8 +42,6 @@ INI_DIR				=	/etc/php5/conf.d
 #
 
 EXTENSION_DIR		=	$(shell php-config --extension-dir)
-BINARY_DIR 			= ./bin/
-OBJECTS_DIR			= ./obj/
 
 #
 #	The name of the extension and the name of the .ini file
@@ -85,10 +83,10 @@ LINKER				=	g++
 #	with a list of all flags that should be passed to the linker.
 #
 
-COMPILER_FLAGS		=	-Wall -c -o2 -std=c++11 -fpic -o
+COMPILER_FLAGS		=	-Wall -c -g -std=c++11 -fpic -o
 LINKER_FLAGS		=	-shared
 LINKER_DEPENDENCIES	=	-lphpcpp -lopencv_core -lopencv_calib3d -lopencv_imgproc -lopencv_contrib -lopencv_legacy -lopencv_highgui
-#PKG_CONFIG 			= 	$(shell pkg-config --cflags --libs opencv)
+
 #
 #	Command to remove files, copy files and create directories.
 #
@@ -96,10 +94,8 @@ LINKER_DEPENDENCIES	=	-lphpcpp -lopencv_core -lopencv_calib3d -lopencv_imgproc -
 #	So you can probably leave this as it is
 #
 
-RM					=	rm -f
 RMRF				=	rm -rf
 CP					=	cp -f
-MV					=	mv
 MKDIR				=	mkdir -p
 
 #
@@ -119,21 +115,16 @@ OBJECTS				=	$(SOURCES:%.cpp=%.o)
 
 all:					${OBJECTS} ${EXTENSION}
 
-${OBJECTS}:
+${OBJECTS}: 
 						${COMPILER} ${COMPILER_FLAGS} $@ ${@:%.o=%.cpp}
-						${MKDIR} ${OBJECTS_DIR}
-						${MV} ${OBJECTS} ${OBJECTS_DIR}
 						
-${EXTENSION}:			${OBJECTS}
-						${LINKER} ${LINKER_FLAGS} -o $@ ${OBJECTS_DIR}${OBJECTS} ${LINKER_DEPENDENCIES} ${PKG_CONFIG}
-						${MKDIR} ${BINARY_DIR}
-						${MV} ${EXTENSION} ${BINARY_DIR}${EXTENSION}
-						${CP} ${INI} ${BINARY_DIR}${INI}
-						
+${EXTENSION}:			
+						${LINKER} ${LINKER_FLAGS} -o $@ ${OBJECTS} ${LINKER_DEPENDENCIES} ${PKG_CONFIG}
+									
 install:		
-						${CP} ${BINARY_DIR}${EXTENSION} ${EXTENSION_DIR}
-						${CP} ${BINARY_DIR}${INI} ${INI_DIR}
+						${CP} ${EXTENSION} ${EXTENSION_DIR}
+						${CP} ${INI} ${INI_DIR}
 						
 clean:
-						${RMRF} ${BINARY_DIR}
-						${RMRF} ${OBJECTS_DIR}
+						${RMRF} *.o
+						${RMRF} ${EXTENSION}
